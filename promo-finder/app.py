@@ -40,19 +40,51 @@ import os  # noqa: E402
 # stays open), and ALLOW_LOCAL_PATH=0 so the server never reads its own folders.
 ACCESS_CODE = os.environ.get("APP_ACCESS_CODE", "")
 ALLOW_LOCAL = os.environ.get("ALLOW_LOCAL_PATH", "1") == "1"
+# Budget cap for a public link: at most this many AI runs per UTC day (0 = unlimited). Further runs
+# still work, in the free rule-based mode. Code-holders (APP_ACCESS_CODE) are not capped.
+AI_DAILY_LIMIT = int(os.environ.get("AI_DAILY_RUN_LIMIT", "0"))
+_AI_USAGE = {"day": "", "runs": 0}
+_AI_LOCK = threading.Lock()
 
 
-def _ai_allowed(use_llm: bool, code: str) -> bool:
-    if use_llm and ACCESS_CODE and code.strip() != ACCESS_CODE:
-        raise HTTPException(403, "Wrong access code for the AI model. Leave AI off to run the rule-based mode.")
-    return use_llm
+def _ai_runs_left() -> int | None:
+    if not AI_DAILY_LIMIT:
+        return None
+    today = time.strftime("%Y-%m-%d", time.gmtime())
+    if _AI_USAGE["day"] != today:
+        _AI_USAGE.update(day=today, runs=0)
+    return max(0, AI_DAILY_LIMIT - _AI_USAGE["runs"])
 
 
-def _start(job_id: str, folder: Path, use_llm: bool, top_n: int, name: str, model: str = "", episodes: str = ""):
+def _ai_allowed(use_llm: bool, code: str) -> tuple[bool, str]:
+    """Returns (use_llm, note). A wrong access code is an error; an exhausted daily budget falls back."""
+    if not use_llm:
+        return False, ""
+    if ACCESS_CODE and code.strip():
+        if code.strip() != ACCESS_CODE:
+            raise HTTPException(403, "Wrong access code. Clear it to use the public daily AI allowance.")
+        return True, ""
+    if ACCESS_CODE and not AI_DAILY_LIMIT:
+        raise HTTPException(403, "This app needs an access code for the AI model. Turn AI off to run the rule-based mode.")
+    with _AI_LOCK:
+        left = _ai_runs_left()
+        if left is None:
+            return True, ""
+        if left == 0:
+            return False, "Today's free AI runs are used up, so this run uses the rule-based mode. Try AI again tomorrow."
+        _AI_USAGE["runs"] += 1
+        return True, ""
+
+
+def _start(job_id: str, folder: Path, use_llm: bool, top_n: int, name: str, model: str = "", episodes: str = "",
+           note: str = ""):
     job = JOBS[job_id]
 
     def progress(msg):
         job["log"].append({"t": round(time.time() - job["started"], 1), "msg": msg})
+
+    if note:
+        progress(note)
 
     def work():
         try:
@@ -77,40 +109,64 @@ def _new_job(name: str) -> str:
 def config():
     load_dotenv(ROOT / ".env", override=True)
     llm, model = LLM(), SuccessModel()
+    with _AI_LOCK:
+        left = _ai_runs_left()
     return {"llm_available": llm.available, "llm": llm.describe(), "models": model_options(),
-            "ai_requires_code": bool(ACCESS_CODE), "allow_local_path": ALLOW_LOCAL,
+            "ai_requires_code": bool(ACCESS_CODE) and not AI_DAILY_LIMIT, "access_code_optional": bool(ACCESS_CODE),
+            "ai_runs_left_today": left, "ai_daily_limit": AI_DAILY_LIMIT or None, "allow_local_path": ALLOW_LOCAL,
             "success_model": model.meta.get("summary") if model.available else None}
+
+
+MAX_FILES, MAX_BYTES = 300, 30 * 1024 * 1024  # a 50-episode show is ~0.5 MB; this blocks zip bombs
 
 
 @app.post("/api/runs")
 async def create_run(files: list[UploadFile] = File(...), use_llm: bool = Form(True), top_n: int = Form(15),
                      show_name: str = Form(""), model: str = Form(""), episodes: str = Form(""),
                      access_code: str = Form("")):
-    use_llm = _ai_allowed(use_llm, access_code)
     top_n = max(5, min(int(top_n), 40))
     job_id = _new_job(show_name or "Uploaded show")
     folder = UPLOADS / job_id
     folder.mkdir(parents=True)
-    n = 0
+    n, total = 0, 0
+
+    def reject(msg):
+        shutil.rmtree(folder, ignore_errors=True)
+        JOBS.pop(job_id, None)
+        raise HTTPException(400, msg)
+
     for f in files:
         data = await f.read()
         fname = Path(f.filename or "file").name
         if fname.lower().endswith(".zip"):
-            with zipfile.ZipFile(io.BytesIO(data)) as z:
-                for m in z.infolist():
-                    if m.is_dir() or not m.filename.lower().endswith(".txt"):
-                        continue
-                    (folder / Path(m.filename).name).write_bytes(z.read(m))  # flatten: no path traversal
-                    n += 1
+            try:
+                z = zipfile.ZipFile(io.BytesIO(data))
+            except zipfile.BadZipFile:
+                reject(f"{fname} is not a valid .zip file.")
+            for m in z.infolist():
+                if m.is_dir() or not m.filename.lower().endswith(".txt"):
+                    continue
+                total += m.file_size
+                n += 1
+                if n > MAX_FILES or total > MAX_BYTES:
+                    reject("Upload too large: up to 300 episode files and 30 MB of text.")
+                (folder / Path(m.filename).name).write_bytes(z.read(m))  # flatten: no path traversal
         elif fname.lower().endswith(".txt"):
-            (folder / fname).write_bytes(data)
+            total += len(data)
             n += 1
+            if n > MAX_FILES or total > MAX_BYTES:
+                reject("Upload too large: up to 300 episode files and 30 MB of text.")
+            (folder / fname).write_bytes(data)
     if n == 0:
+        reject("No .txt screenplay files found. Upload episode .txt files or a .zip of them.")
+    try:
+        use_llm, note = _ai_allowed(use_llm, access_code)  # counted only once the upload is valid
+    except HTTPException:
         shutil.rmtree(folder, ignore_errors=True)
         JOBS.pop(job_id, None)
-        raise HTTPException(400, "No .txt screenplay files found. Upload episode .txt files or a .zip of them.")
-    _start(job_id, folder, use_llm, top_n, show_name or f"{n} episodes", model, episodes)
-    return {"id": job_id, "files": n}
+        raise
+    _start(job_id, folder, use_llm, top_n, show_name or f"{n} episodes", model, episodes, note)
+    return {"id": job_id, "files": n, "note": note}
 
 
 class LocalRun(BaseModel):
@@ -127,14 +183,14 @@ class LocalRun(BaseModel):
 def create_local_run(body: LocalRun):
     if not ALLOW_LOCAL:
         raise HTTPException(403, "Folder paths are disabled on the hosted app. Upload the .txt files or a .zip instead.")
-    body.use_llm = _ai_allowed(body.use_llm, body.access_code)
     folder = Path(body.path.strip().strip('"'))
     if not folder.is_dir() or not list(folder.glob("*.txt")):
         raise HTTPException(400, f"Folder not found or has no .txt files: {body.path}")
+    body.use_llm, note = _ai_allowed(body.use_llm, body.access_code)
     name = body.show_name or folder.name
     job_id = _new_job(name)
-    _start(job_id, folder, body.use_llm, body.top_n, name, body.model, body.episodes)
-    return {"id": job_id}
+    _start(job_id, folder, body.use_llm, max(5, min(body.top_n, 40)), name, body.model, body.episodes, note)
+    return {"id": job_id, "note": note}
 
 
 @app.get("/api/runs")

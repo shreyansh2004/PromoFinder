@@ -1,0 +1,26 @@
+# One-click deploy on Render (free): Dashboard -> New -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: promo-finder
+    runtime: docker
+    plan: free
+    rootDir: promo-finder
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY      # your Claude key (kept secret by Render)
+        sync: false
+      - key: GEMINI_API_KEY         # optional backup provider
+        sync: false
+      - key: APP_ACCESS_CODE        # optional: code-holders skip the daily limit
+        sync: false
+      - key: LLM_PROVIDERS
+        value: claude,gemini
+      - key: CLAUDE_MODELS
+        value: claude-sonnet-5-5
+      - key: AI_DAILY_RUN_LIMIT     # free AI runs per day for anyone with the link
+        value: "10"
+      - key: LLM_CONCURRENCY
+        value: "4"

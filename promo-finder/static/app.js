@@ -16,11 +16,13 @@ const PROVIDER_LABEL = { claude: "Claude", gemini: "Gemini", openai_compat: "Cus
 fetch("/api/config").then((r) => r.json()).then((c) => {
   $("#engine").innerHTML = c.llm_available ? `AI <b>${esc(c.llm.split(" -> ")[0])}</b>${c.llm.includes("->") ? " with failover" : ""}` : `No AI key set: <b>rule-based mode</b>`;
   if (!c.allow_local_path) $("#localwrap").hidden = true;
-  if (c.ai_requires_code && c.llm_available) {
+  if ((c.ai_requires_code || c.access_code_optional) && c.llm_available) {
     $("#accesscode").hidden = false;
+    $("#accesscode").placeholder = c.ai_requires_code ? "Access code for the AI model" : "Access code (optional, skips the daily limit)";
     const syncCode = () => { $("#accesscode").hidden = !$("#usellm").checked; };
     $("#usellm").addEventListener("change", syncCode);
   }
+  state.aiLeft = c.ai_runs_left_today;
   const sel = $("#model");
   if (!c.llm_available) {
     $("#usellm").checked = false; $("#usellm").disabled = true; sel.disabled = true;
@@ -32,7 +34,8 @@ fetch("/api/config").then((r) => r.json()).then((c) => {
   c.models.forEach((m) => (groups[m.provider] ||= []).push(m));
   sel.innerHTML = `<option value="">Automatic: ${esc(c.llm.replaceAll(":", " ").replaceAll("->", "then"))}</option>` +
     Object.entries(groups).map(([p, ms]) => `<optgroup label="${esc(PROVIDER_LABEL[p] || p)}">${ms.map((m) => `<option value="${esc(m.model)}">${esc(m.model)}</option>`).join("")}</optgroup>`).join("");
-  $("#llmnote").textContent = "The chosen model goes first; if it is rate-limited or unavailable the next one takes over.";
+  $("#llmnote").textContent = "The chosen model goes first; if it is rate-limited or unavailable the next one takes over." +
+    (c.ai_runs_left_today !== null && c.ai_runs_left_today !== undefined ? ` Free AI runs left today: ${c.ai_runs_left_today} of ${c.ai_daily_limit}; after that it runs rule-based.` : "");
   $("#usellm").addEventListener("change", () => { sel.disabled = !$("#usellm").checked; });
 }).catch(() => { $("#engine").textContent = "Server not reachable"; });
 

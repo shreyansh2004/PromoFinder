@@ -1,19 +1,8 @@
----
-title: Promo Finder
-emoji: 🎬
-colorFrom: pink
-colorTo: indigo
-sdk: docker
-app_port: 7860
-pinned: false
-short_description: Finds and ranks 20-60 s promo clips in microdrama scripts
----
-
 # Promo Finder
 
 Finds and ranks 20–60 second promo clips in microdrama screenplays. Each clip opens on a hook in the first 3 seconds and cuts on a cliffhanger, with exact episode timestamps an editor can cut from. Built for the Kuku AI Generalist assignment (Problem 1).
 
-**Live app:** see the Hugging Face Space linked in the submission. Upload a show's episode `.txt` files or a `.zip` of them.
+**Live app:** the Render link in the submission. Upload a show's episode `.txt` files or a `.zip` of them. On the free plan the app sleeps when idle, so the first visit can take about a minute to load.
 
 ## Run it locally
 ```bash
@@ -34,7 +23,7 @@ Open http://localhost:8000. Command line:
 - Providers are tried in `LLM_PROVIDERS` order (default `claude,gemini`).
 - On a rate limit, timeout, retired model or bad key, the tool moves to the next model or provider. If none answers, it continues rule-based.
 - The web app has a dropdown to pick the model; the chosen model goes first, with the rest of the chain behind it.
-- Keys go in `.env` (see `.env.example`), or in the Space's secrets when hosted.
+- Keys go in `.env` (see `.env.example`), or in the host's environment settings when hosted.
 
 ## How it works
 | Step | Done by | What |
@@ -57,14 +46,13 @@ Open http://localhost:8000. Command line:
 - **Readable model:** `model/artifacts/model_full.json` is the trained model in plain text (scaler means, coefficients, intercept).
 - **Output check:** `model/verify_outputs.py` re-checks every promo against the scripts. The 50-episode run passed 106/106 checks.
 
-## Hosting (Hugging Face Space)
-- The `Dockerfile` builds the app.
-- `.github/workflows/sync-to-hf.yml` deploys every push to the Space, once these are set:
-  - GitHub secret `HF_TOKEN`
-  - GitHub variable `HF_SPACE`
-- Space secrets:
-  - `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY`
-  - `APP_ACCESS_CODE`: only people with this code can use the AI mode; the rule-based mode stays open to everyone.
+## Hosting (Render, free plan)
+- `render.yaml` at the repo root deploys this folder with the `Dockerfile`. Render dashboard → **New → Blueprint** → pick the repo, then fill in the keys it asks for.
+- The hosted image installs only `requirements-app.txt` (runtime libraries), so it fits the free 512 MB plan.
+- **Open to anyone:**
+  - Anyone with the link gets `AI_DAILY_RUN_LIMIT` AI runs per day (default 10). After that, runs use the free rule-based mode.
+  - An optional `APP_ACCESS_CODE` lets you skip the limit.
+  - Uploads are capped at 300 files / 30 MB.
 - Folder paths are disabled on the hosted app, so it accepts uploads only.
 
 ## Not in this repo

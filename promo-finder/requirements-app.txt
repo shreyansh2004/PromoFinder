@@ -1,0 +1,9 @@
+# What the web app needs at runtime (the hosted image installs only this).
+# requirements.txt adds the training/analysis libraries for model/*.py.
+anthropic>=2.6
+openai>=1.40
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+python-dotenv>=1.0
+numpy>=1.26

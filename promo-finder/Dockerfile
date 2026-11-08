@@ -1,4 +1,4 @@
-# Hugging Face Spaces (Docker SDK) image for Promo Finder.
+# Web app image (Render, or any Docker host). Installs only the runtime libraries.
 FROM python:3.12-slim
 
 RUN useradd -m -u 1000 user
@@ -9,11 +9,11 @@ ENV HOME=/home/user \
     ALLOW_LOCAL_PATH=0
 WORKDIR $HOME/app
 
-COPY --chown=user requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY --chown=user requirements-app.txt .
+RUN pip install --no-cache-dir --user -r requirements-app.txt
 
 COPY --chown=user . .
 RUN mkdir -p uploads outputs feedback .cache
 
-EXPOSE 7860
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+# Render (and most hosts) pass the port in $PORT
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
