@@ -1,0 +1,14 @@
+.env
+.claude/
+*.joblib
+.venv/
+.cache/
+__pycache__/
+outputs/
+uploads/
+feedback/
+# confidential input pack and third-party ad media never go in the repo
+*-scripts/
+*.mp4
+keyframes/
+image_sheets/

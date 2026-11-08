@@ -1,0 +1,10 @@
+.env
+.venv
+.cache
+outputs
+uploads
+feedback
+dataset
+__pycache__
+.git
+.github

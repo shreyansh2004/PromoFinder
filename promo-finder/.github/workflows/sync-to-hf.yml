@@ -1,0 +1,30 @@
+# Every push to main deploys the app to a Hugging Face Space.
+# Setup (once): GitHub repo -> Settings -> Secrets and variables -> Actions
+#   secret   HF_TOKEN  = a Hugging Face token with "write" access
+#   variable HF_SPACE  = <hf-username>/<space-name>   e.g. shrey/promo-finder
+name: Deploy to Hugging Face Space
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ vars.HF_SPACE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Push to the Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          # Spaces reject plain-git binaries; the app needs none of these (models ship as JSON)
+          git rm -r -q --cached --ignore-unmatch dataset docs "*.png" "*.jpg" "*.joblib"
+          git commit -q -m "Space build from ${GITHUB_SHA}" || true
+          git push --force "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main

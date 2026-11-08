@@ -1,0 +1,1 @@
+{"ad_id": "1878194605791905", "whisper_model": "small", "duration_s": 379.69, "head_segments": [{"start": 14.32, "end": 14.76, "text": "It's incredible.", "words": [{"w": " It's", "s": 14.32, "e": 14.52}, {"w": " incredible.", "s": 14.52, "e": 14.76}]}], "language": "en", "language_prob": 0.958, "tail_segments": [], "status": "ok", "secs": 13.6}

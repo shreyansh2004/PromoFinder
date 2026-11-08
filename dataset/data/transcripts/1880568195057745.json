@@ -1,0 +1,1 @@
+{"ad_id": "1880568195057745", "whisper_model": "small", "duration_s": 16.7, "head_segments": [{"start": 0.0, "end": 2.72, "text": "Yeah, so good", "words": [{"w": " Yeah,", "s": 0.0, "e": 0.6}, {"w": " so", "s": 0.84, "e": 1.62}, {"w": " good", "s": 1.62, "e": 2.72}]}], "language": "en", "language_prob": 0.296, "tail_segments": [], "status": "ok", "secs": 82.8}

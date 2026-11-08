@@ -1,0 +1,1 @@
+{"ad_id": "1858258494777809", "whisper_model": "small", "duration_s": 16.93, "head_segments": [{"start": 2.06, "end": 2.48, "text": "Okay.", "words": [{"w": " Okay.", "s": 2.06, "e": 2.48}]}], "language": "en", "language_prob": 0.527, "tail_segments": [], "status": "ok", "secs": 19.2}

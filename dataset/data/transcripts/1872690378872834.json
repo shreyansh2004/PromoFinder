@@ -1,0 +1,1 @@
+{"ad_id": "1872690378872834", "whisper_model": "small", "duration_s": 15.02, "head_segments": [{"start": 2.83, "end": 3.65, "text": "Tell me love", "words": [{"w": " Tell", "s": 2.83, "e": 3.11}, {"w": " me", "s": 3.11, "e": 3.33}, {"w": " love", "s": 3.33, "e": 3.65}]}], "language": "en", "language_prob": 0.631, "tail_segments": [], "status": "ok", "secs": 12.4}

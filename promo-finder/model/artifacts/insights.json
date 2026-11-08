@@ -1,0 +1,151 @@
+{
+  "headline": "What made real short-drama ads reach more people",
+  "lede": "221 real ads from DramaBox, NetShort, ReelShort, ShortMax and other drama publishers in TikTok's public ad library, compared within each app. Bars show the share of an app's ads that reached 100K+ people (weighted so every app counts equally); the pink line is 50%, a coin flip.",
+  "blocks": [
+    {
+      "title": "How the ad opens (hook type)",
+      "subtitle": "AI-tagged from the first 15 seconds. As a predictor: within-app AUC 0.48 \u00b1 0.08.",
+      "base": 0.5,
+      "rows": [
+        {
+          "label": "narrator setup",
+          "rate": 0.789,
+          "n": 36
+        },
+        {
+          "label": "romantic or sexual shock",
+          "rate": 0.545,
+          "n": 19
+        },
+        {
+          "label": "identity or status reveal",
+          "rate": 0.501,
+          "n": 23
+        },
+        {
+          "label": "insult line",
+          "rate": 0.481,
+          "n": 13
+        },
+        {
+          "label": "calm dialogue",
+          "rate": 0.426,
+          "n": 52
+        },
+        {
+          "label": "threat or ultimatum",
+          "rate": 0.187,
+          "n": 29
+        },
+        {
+          "label": "no speech",
+          "rate": 0.029,
+          "n": 10
+        }
+      ]
+    },
+    {
+      "title": "What is on screen in the first 3 seconds",
+      "subtitle": "AI-tagged from real keyframes. As a predictor: within-app AUC 0.53 \u00b1 0.13.",
+      "base": 0.5,
+      "rows": [
+        {
+          "label": "pregnancy or baby",
+          "rate": 0.771,
+          "n": 11
+        },
+        {
+          "label": "supernatural or fantasy",
+          "rate": 0.759,
+          "n": 31
+        },
+        {
+          "label": "text overlay only",
+          "rate": 0.752,
+          "n": 9
+        },
+        {
+          "label": "public humiliation crowd",
+          "rate": 0.68,
+          "n": 19
+        },
+        {
+          "label": "intimacy kiss",
+          "rate": 0.666,
+          "n": 13
+        },
+        {
+          "label": "calm talking",
+          "rate": 0.554,
+          "n": 50
+        },
+        {
+          "label": "other",
+          "rate": 0.428,
+          "n": 18
+        },
+        {
+          "label": "injury blood hospital",
+          "rate": 0.362,
+          "n": 20
+        },
+        {
+          "label": "violence slap fight",
+          "rate": 0.334,
+          "n": 13
+        },
+        {
+          "label": "crying or shock closeup",
+          "rate": 0.274,
+          "n": 14
+        },
+        {
+          "label": "wedding or formal event",
+          "rate": 0.153,
+          "n": 17
+        }
+      ]
+    },
+    {
+      "title": "Talking vs silent opening",
+      "subtitle": "Measured from the audio, no AI. As a predictor: within-app AUC 0.51 \u00b1 0.10.",
+      "base": 0.5,
+      "rows": [
+        {
+          "label": "Someone speaks in the first 3 s",
+          "rate": 0.534,
+          "n": 182
+        },
+        {
+          "label": "Silent first 3 s",
+          "rate": 0.357,
+          "n": 39
+        }
+      ]
+    },
+    {
+      "title": "Close-up opening",
+      "subtitle": "Measured with a face detector, no AI.",
+      "base": 0.5,
+      "rows": [
+        {
+          "label": "No face close-up",
+          "rate": 0.564,
+          "n": 104
+        },
+        {
+          "label": "Face close-up in first 3 s",
+          "rate": 0.42,
+          "n": 117
+        }
+      ]
+    }
+  ],
+  "model_card": [
+    "Trained on 221 unique English short-drama ad videos from 5 apps; labels are TikTok's reach bands (100K+ vs under 10K).",
+    "High- and low-reach ads came from different apps, so the model compares ads within the same app. A naive model only learned the app.",
+    "Honest result: no signal group reliably predicts reach within an app at this sample size (best within-app AUC 0.54; measured signals 0.51; 0.50 is a coin flip).",
+    "Every ranking signal (this model, the AI stranger test, the script rules) was tested on the same real ads; each one's share of the final score is earned from that test (see above). The win rates below are descriptive, not proof.",
+    "Reach measures exposure, not installs. Production plan: retrain weekly on Kuku's own ad results (3-second hold, CTR, installs)."
+  ]
+}

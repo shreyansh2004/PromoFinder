@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promo Finder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#" data-view="start" aria-label="Promo Finder home">
+      <span class="brand-mark" aria-hidden="true"></span>Promo Finder
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab" data-view="start">New run</button>
+      <button class="tab" data-view="results" id="tab-results" disabled>Promos</button>
+      <button class="tab" data-view="insights">What wins in real ads</button>
+    </nav>
+    <p class="engine" id="engine">Checking setup…</p>
+  </header>
+
+  <main>
+    <!-- START -->
+    <section class="view" id="view-start">
+      <div class="start">
+        <div class="start-copy">
+          <h1>Find the clips that make strangers stop scrolling.</h1>
+          <p class="lede">Drop in a show's episode scripts. You get ranked 20–60 second promos, each opening on a hook
+            in the first three seconds and cutting on a cliffhanger, with exact timestamps an editor can cut from.</p>
+          <dl class="legend">
+            <div><dt><span class="sw sw-hook"></span>Hook</dt><dd>what a viewer sees and hears in the first 3 seconds</dd></div>
+            <div><dt><span class="sw sw-cut"></span>Cut</dt><dd>the unresolved moment the clip ends on</dd></div>
+          </dl>
+        </div>
+
+        <form class="runbox" id="runform">
+          <label class="drop" id="drop" tabindex="0">
+            <input type="file" id="files" multiple accept=".txt,.zip" hidden>
+            <strong>Drop episode scripts here</strong>
+            <span>.txt files, or one .zip of them</span>
+            <span class="picked" id="picked"></span>
+          </label>
+
+          <div id="localwrap">
+            <div class="or"><span>or use a folder on this computer</span></div>
+            <input class="field" id="localpath" type="text" placeholder="C:\path\to\show-scripts" aria-label="Folder path on this computer">
+          </div>
+
+          <div class="row">
+            <label class="fieldlabel" for="showname">Show name</label>
+            <input class="field" id="showname" type="text" placeholder="Name of the show">
+          </div>
+          <div class="row two">
+            <div>
+              <label class="fieldlabel" for="topn">Promos to return</label>
+              <input class="field" id="topn" type="number" min="5" max="40" value="15">
+            </div>
+            <div>
+              <label class="fieldlabel" for="episodes">Episodes <span class="opt">(optional)</span></label>
+              <input class="field" id="episodes" type="text" placeholder="All, or e.g. 1-5">
+            </div>
+          </div>
+          <div class="row">
+            <span class="fieldlabel">Engine</span>
+            <label class="switch"><input type="checkbox" id="usellm" checked><span>Use AI model</span></label>
+            <select class="field" id="model" aria-label="AI model"></select>
+            <input class="field" id="accesscode" type="password" placeholder="Access code for the AI model" aria-label="Access code" hidden>
+            <small id="llmnote" class="note"></small>
+          </div>
+          <button class="primary" type="submit" id="runbtn">Find promos</button>
+          <p class="error" id="formerror" role="alert"></p>
+        </form>
+      </div>
+
+      <section class="progress" id="progress" hidden aria-live="polite">
+        <h2>Reading the show</h2>
+        <ol id="steps"></ol>
+      </section>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="view" id="view-results" hidden>
+      <div class="showbar">
+        <div>
+          <h2 id="showtitle"></h2>
+          <p class="premise" id="premise"></p>
+        </div>
+        <div class="downloads">
+          <a class="ghost" id="dl-csv">Download CSV</a>
+          <a class="ghost" id="dl-md">Report</a>
+          <a class="ghost" id="dl-json">JSON</a>
+        </div>
+      </div>
+
+      <div class="ribbon-wrap">
+        <div class="ribbon" id="ribbon" aria-label="Where each promo sits in the show"></div>
+        <p class="ribbon-caption" id="ribbon-caption"></p>
+      </div>
+
+      <div class="bay">
+        <ol class="ranklist" id="ranklist" aria-label="Ranked promos"></ol>
+
+        <div class="stage">
+          <div class="phone" aria-label="Clip preview">
+            <div class="phone-head">
+              <span id="ph-dur"></span>
+              <span id="ph-src"></span>
+            </div>
+            <div class="phone-body" id="phone"></div>
+            <div class="phone-scale" id="scale" aria-hidden="true"></div>
+          </div>
+          <p class="keys">Use <kbd>j</kbd>/<kbd>k</kbd> to move, <kbd>a</kbd> approve, <kbd>r</kbd> reject.</p>
+        </div>
+
+        <aside class="detail" id="detail"></aside>
+      </div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section class="view" id="view-insights" hidden>
+      <div class="insights" id="insights"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

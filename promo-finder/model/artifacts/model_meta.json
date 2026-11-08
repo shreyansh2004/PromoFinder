@@ -1,0 +1,109 @@
+{
+  "full": {
+    "features": [
+      "t_emotion_intensity",
+      "t_hook_is_question",
+      "t_open_mid_conflict"
+    ],
+    "C": 0.01,
+    "within_app_auc": 0.541,
+    "sd": 0.079,
+    "weight": 0.082
+  },
+  "basic": {
+    "features": [
+      "f_hook15_words",
+      "f_hook15_questions",
+      "f_hook15_exclaims",
+      "f_hook15_you_rate",
+      "f_hook15_short_lines",
+      "f_silent_open_3s",
+      "f_cuts_3s",
+      "f_face_closeup_3s"
+    ],
+    "C": 0.3,
+    "within_app_auc": 0.514,
+    "weight": 0.028
+  },
+  "groups": {
+    "measured signals (no AI)": {
+      "C": 0.3,
+      "auc": 0.514,
+      "sd": 0.102
+    },
+    "hook type (AI tag)": {
+      "C": 0.01,
+      "auc": 0.481,
+      "sd": 0.081
+    },
+    "on-screen visual hook (AI tag)": {
+      "C": 0.01,
+      "auc": 0.526,
+      "sd": 0.133
+    },
+    "genre + tropes (AI tag)": {
+      "C": 0.3,
+      "auc": 0.471,
+      "sd": 0.105
+    },
+    "tone flags (AI tag)": {
+      "C": 0.01,
+      "auc": 0.541,
+      "sd": 0.079
+    }
+  },
+  "external_mid_days": {
+    "rho": -0.016,
+    "p": 0.898,
+    "n": 65
+  },
+  "n_train": 221,
+  "apps": [
+    "DramaBox",
+    "NetShort",
+    "ReelShort",
+    "ShortMax",
+    "unspecified"
+  ],
+  "dropped": {
+    "rare": [
+      "t_hook_violence_or_slap",
+      "t_hook_public_humiliation",
+      "t_hook_betrayal_reveal",
+      "t_hook_rescue_entrance",
+      "t_hook_question_to_viewer",
+      "t_hook_unclear",
+      "t_genre_historical_royal",
+      "t_vis_unclear",
+      "t_setting_historical",
+      "t_trope_amnesia",
+      "t_trope_enemies_to_lovers"
+    ],
+    "reference": [
+      "t_hook_unclear",
+      "t_genre_unclear",
+      "t_vis_unclear",
+      "t_setting_unclear",
+      "t_trope_none",
+      "t_hook_calm_dialogue",
+      "t_vis_calm_talking",
+      "t_genre_family_drama",
+      "t_setting_modern"
+    ],
+    "setting": [
+      "t_setting_modern",
+      "t_setting_historical",
+      "t_setting_fantasy",
+      "t_setting_unclear"
+    ],
+    "correlated": [
+      "f_first3_words",
+      "f_first_line_question",
+      "f_speech_start_s",
+      "t_genre_billionaire_ceo_romance",
+      "t_narrator_voiceover"
+    ],
+    "vif": []
+  },
+  "summary": "hook-type model, 221 real ads, within-app AUC 0.54 (ranking weight 0.08)"
+}

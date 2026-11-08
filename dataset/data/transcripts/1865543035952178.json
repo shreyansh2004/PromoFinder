@@ -1,0 +1,1 @@
+{"ad_id": "1865543035952178", "whisper_model": "small", "status": "error: HTTPNotFoundError: [Errno 875574520] Server returned 404 Not Found: 'https://library.tiktok.com/api/v1/cdn/1794087425/video/aHR0cHM6Ly92MTZtLnRpa3Rva2Nkbi5jb20vYjI5ZjczMmJjODU4ZGI4OWViMTM1NTllZGRjNGMxNDcvNmFlZmYyZTcvdml", "secs": 2.0}

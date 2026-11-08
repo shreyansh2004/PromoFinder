@@ -1,0 +1,91 @@
+{
+  "stranger": {
+    "within_app_auc": 0.611,
+    "ci95": [
+      0.515,
+      0.691
+    ],
+    "per_source": {
+      "search": 0.439,
+      "named": 0.718
+    },
+    "mid_days_rho": 0.091
+  },
+  "s_hook": {
+    "within_app_auc": 0.593,
+    "ci95": [
+      0.496,
+      0.672
+    ],
+    "per_source": {
+      "search": 0.461,
+      "named": 0.641
+    },
+    "mid_days_rho": 0.002
+  },
+  "s_cliff": {
+    "within_app_auc": 0.528,
+    "ci95": [
+      0.444,
+      0.603
+    ],
+    "per_source": {
+      "search": 0.387,
+      "named": 0.685
+    },
+    "mid_days_rho": 0.037
+  },
+  "s_standalone": {
+    "within_app_auc": 0.614,
+    "ci95": [
+      0.518,
+      0.696
+    ],
+    "per_source": {
+      "search": 0.513,
+      "named": 0.646
+    },
+    "mid_days_rho": 0.141
+  },
+  "rules": {
+    "within_app_auc": 0.514,
+    "ci95": [
+      0.391,
+      0.628
+    ],
+    "per_source": {
+      "search": 0.438,
+      "named": 0.594
+    },
+    "mid_days_rho": 0.055
+  },
+  "rules_hook_only": {
+    "within_app_auc": 0.511,
+    "ci95": [
+      0.384,
+      0.63
+    ],
+    "per_source": {
+      "search": 0.472,
+      "named": 0.496
+    },
+    "mid_days_rho": 0.167
+  },
+  "ml_model": {
+    "within_app_auc": 0.541
+  },
+  "earned_weights": {
+    "model": 0.082,
+    "editor": 0.222,
+    "rules": 0.028
+  },
+  "n_ads": 221,
+  "apps": [
+    "DramaBox",
+    "NetShort",
+    "ReelShort",
+    "ShortMax",
+    "unspecified"
+  ],
+  "llm": "claude:claude-sonnet-5-5 -> gemini:gemini-3.5-flash"
+}

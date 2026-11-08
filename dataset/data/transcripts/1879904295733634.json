@@ -1,0 +1,1 @@
+{"ad_id": "1879904295733634", "whisper_model": "small", "duration_s": 10.03, "head_segments": [{"start": 8.73, "end": 9.75, "text": "What happened?", "words": [{"w": " What", "s": 8.73, "e": 9.41}, {"w": " happened?", "s": 9.41, "e": 9.75}]}], "language": "en", "language_prob": 0.981, "tail_segments": [], "status": "ok", "secs": 62.3}

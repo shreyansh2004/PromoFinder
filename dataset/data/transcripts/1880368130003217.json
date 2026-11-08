@@ -1,0 +1,1 @@
+{"ad_id": "1880368130003217", "whisper_model": "small", "duration_s": 14.81, "head_segments": [{"start": 0.0, "end": 0.52, "text": "Thank you.", "words": [{"w": " Thank", "s": 0.0, "e": 0.26}, {"w": " you.", "s": 0.26, "e": 0.52}]}], "language": "en", "language_prob": 0.463, "tail_segments": [], "status": "ok", "secs": 12.1}

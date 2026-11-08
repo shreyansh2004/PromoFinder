@@ -1,0 +1,28 @@
+# --- Kuku's confidential input pack and anything quoting it: never publish ---
+I Married a Broken Soldier*/
+*.zip
+*.pdf
+submission/raw_outputs/ai_mode_*/
+submission/raw_outputs/rule_based_*/
+**/outputs/
+**/uploads/
+**/feedback/
+
+# --- third-party ad media (not ours to publish) ---
+dataset/data/keyframes/
+dataset/data/tmp_video/
+dataset/data/debug/
+dataset/gpt/image_sheets/
+*.mp4
+*.jpg
+
+# --- local only ---
+.env
+**/.env
+**/.venv/
+**/.cache/
+**/__pycache__/
+.claude/
+dataset/data/*.txt
+kuku-promo-finder/
+*.joblib
