@@ -17,14 +17,11 @@ Built for the **Kuku AI Generalist assignment, Problem 1: Find the Promos** by S
 - [What it does](#what-it-does)
 - [Run it on your computer](#run-it-on-your-computer)
 - [Using the web app](#using-the-web-app)
-- [Using the command line](#using-the-command-line)
 - [What you get](#what-you-get)
-- [AI models, keys and failover](#ai-models-keys-and-failover)
 - [How it works](#how-it-works)
 - [The data behind the ranking](#the-data-behind-the-ranking)
 - [Results on a 50-episode show](#results-on-a-50-episode-show)
 - [Rebuild the dataset or retrain the model](#rebuild-the-dataset-or-retrain-the-model)
-- [Host it for free](#host-it-for-free)
 - [Project structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Data and confidentiality](#data-and-confidentiality)
@@ -128,34 +125,6 @@ Open **http://localhost:8000** in your browser. Stop the server with `Ctrl + C`.
 
 ---
 
-## Using the command line
-
-```bash
-# AI + rules (uses your .env keys)
-python cli.py --input "path/to/scripts" --out outputs/run1
-
-# Rule-based only: no key, no cost, a few seconds
-python cli.py --input "path/to/scripts" --no-llm
-
-# Quick test on a few episodes with a specific model
-python cli.py --input "path/to/scripts" --episodes 1-5 --model claude-opus-5-5
-
-# Independently check a run against the scripts
-python model/verify_outputs.py outputs/run1/promos.json "path/to/scripts"
-```
-(On Windows, use `.venv\Scripts\python` in place of `python`; on macOS/Linux, `.venv/bin/python`.)
-
-| Flag | Meaning | Default |
-|---|---|---|
-| `--input` | Folder of episode `.txt` files (required) | |
-| `--out` | Output folder | `outputs/<timestamp>` |
-| `--top` | Number of promos to return | 15 |
-| `--episodes` | Subset, e.g. `1-5` or `1,3,10-12` | all |
-| `--no-llm` | Rule-based mode, no API calls | off |
-| `--model` | Put this model first, e.g. `claude-opus-5-5`, `gemini-3.5-flash` | from `.env` |
-| `--max-judge` | Clips sent to the AI stranger test | 30 |
-
----
 
 ## What you get
 
@@ -172,33 +141,6 @@ Each run writes three files:
 - no line of dialogue is cut mid-sentence
 - each clip runs 20–60 seconds
 - something happens in the first 3 seconds
-
----
-
-## AI models, keys and failover
-
-- **Providers are tried in order.** The tool uses the order in `LLM_PROVIDERS`, and each provider tries its model list in order.
-- **Automatic switching:** if a call hits a rate limit, timeout, retired model, bad key or refusal, the tool moves to the next model or provider.
-- **Last resort:** if nothing answers, the run continues rule-based, and affected clips are marked in the app.
-- **Caching:** answers are saved in `.cache/`, so re-running the same show is instant and free.
-
-| Setting (`.env`) | What it does | Example |
-|---|---|---|
-| `LLM_PROVIDERS` | Failover order | `claude,gemini` |
-| `ANTHROPIC_API_KEY` | Claude key | |
-| `CLAUDE_MODELS` | Claude models, tried in order | `claude-sonnet-5-5` |
-| `CLAUDE_EFFORT` | Claude effort level | `medium` |
-| `GEMINI_API_KEY` | Gemini key (`LLM_API_KEY` also works) | |
-| `GEMINI_MODELS` | Gemini models, tried in order | `gemini-3.5-flash,gemini-flash-latest` |
-| `GEMINI_MIN_GAP_S` | Seconds between Gemini calls (free-tier safety) | `4` |
-| `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_API_KEY`, `OPENAI_COMPAT_MODELS` | Any OpenAI-compatible API (Groq, OpenRouter, an internal endpoint); add `openai_compat` to `LLM_PROVIDERS` | |
-| `LLM_CONCURRENCY` | Parallel AI reviews | `2` |
-| `LLM_TIMEOUT_S` | Timeout per AI call, in seconds | `150` |
-| `LLM_RATE_COOLDOWN_S` | Pause on a provider after a rate limit, in seconds | `60` |
-| `LLM_CACHE_DIR` | Where cached AI answers are stored | `.cache/llm` |
-| `APP_ACCESS_CODE` | Hosted app: code that unlocks AI mode (or skips the daily cap) | |
-| `AI_DAILY_RUN_LIMIT` | Hosted app: free AI runs per day for everyone (0 = unlimited) | `10` |
-| `ALLOW_LOCAL_PATH` | Allow the "folder on this computer" field (`0` when hosted) | `1` |
 
 ---
 
@@ -286,21 +228,6 @@ python model/train.py ../dataset/data/ads_dataset_tagged.csv
 python model/validate_signals.py ../dataset/data/ads_dataset_tagged.csv ../dataset/data/transcripts 4
 ```
 The dataset pipeline (scraping, transcription, visual measurements, ChatGPT tagging and its checks) has its own requirements and step-by-step commands in [`dataset/README.md`](dataset/README.md) and [`dataset/gpt/PROMPTS.md`](dataset/gpt/PROMPTS.md).
-
----
-
-## Host it for free
-
-[`render.yaml`](render.yaml) deploys the app on Render's free plan:
-1. **Dashboard → New → Blueprint** → pick this repository.
-2. Paste your `ANTHROPIC_API_KEY`, and optionally `GEMINI_API_KEY` and `APP_ACCESS_CODE`.
-
-What the hosted version does:
-- installs only the runtime libraries
-- accepts uploads only (no server folders)
-- gives anyone with the link `AI_DAILY_RUN_LIMIT` free AI runs per day, then falls back to rule-based mode
-
-On the free plan the app sleeps when idle, so the first visit takes about a minute.
 
 ---
 
