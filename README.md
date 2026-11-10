@@ -9,7 +9,6 @@ Promo Finder reads a microdrama's episode screenplays and returns ranked 20–60
 
 It gives exact episode timestamps an editor can cut from.
 
-Built for the **Kuku AI Generalist assignment, Problem 1: Find the Promos** by Shreyansh Kothari.
 
 ---
 
@@ -256,7 +255,7 @@ PromoFinder/
 │   └── .env.example              settings template
 ├── dataset/                      how the training data was built (scripts, tags, checks)
 ├── submission/raw_outputs/       model evidence (training report, validation, heatmap)
-└── render.yaml                   free hosting blueprint
+
 ```
 
 ---
@@ -273,9 +272,3 @@ PromoFinder/
 | A run is slow | The first AI run of a show takes about 3 minutes; repeats are instant thanks to the cache. Use `--episodes 1-5` for quick tests. |
 
 ---
-
-## Data and confidentiality
-
-- **Not in this repo:** Kuku's input pack (the screenplays) and any output that quotes it. `.gitignore` blocks them.
-- **Also excluded:** third-party ad videos and frames. Only metadata, transcripts, measurements and tags from the public Ad Library are included.
-- **Keys:** they live only in your local `.env` (or your host's environment settings) and are never committed.
